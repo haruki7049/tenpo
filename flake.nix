@@ -14,26 +14,50 @@
         pkgs = import nixpkgs {
           inherit overlays system;
         };
+        lib = pkgs.lib;
         treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
         rust = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
         craneLib = (crane.mkLib pkgs).overrideToolchain rust;
         src = ./.;
         cargoArtifacts = craneLib.buildDepsOnly {
           inherit src;
+          buildInputs = bevyengine-dependencies;
+          nativeBuildInputs = [ pkgs.pkg-config ];
         };
         kosu = craneLib.buildPackage {
           inherit src cargoArtifacts;
+          buildInputs = bevyengine-dependencies;
+          nativeBuildInputs = [ pkgs.pkg-config ];
           strictDeps = true;
 
           doCheck = true;
         };
         cargo-clippy = craneLib.cargoClippy {
           inherit cargoArtifacts src;
+          buildInputs = bevyengine-dependencies;
+          nativeBuildInputs = [ pkgs.pkg-config ];
           cargoClippyExtraArgs = "--verbose -- --deny warnings";
         };
         cargo-doc = craneLib.cargoDoc {
           inherit cargoArtifacts src;
+          buildInputs = bevyengine-dependencies;
+          nativeBuildInputs = [ pkgs.pkg-config ];
         };
+        bevyengine-dependencies = with pkgs; [
+          udev
+          alsa-lib
+          vulkan-loader
+
+          # To use the x11 feature
+          xorg.libX11
+          xorg.libXcursor
+          xorg.libXi
+          xorg.libXrandr
+
+          # To use the wayland feature
+          libxkbcommon
+          wayland
+        ];
       in
       {
         formatter = treefmtEval.config.build.wrapper;
@@ -50,10 +74,16 @@
           formatting = treefmtEval.config.build.check self;
         };
 
-        devShells.default = pkgs.mkShell {
-          packages = [
+        devShells.default = pkgs.mkShell rec {
+          buildInputs = bevyengine-dependencies ++ [
             rust
           ];
+
+          nativeBuildInputs = [
+            pkgs.pkg-config
+          ];
+
+          LD_LIBRARY_PATH = lib.makeLibraryPath buildInputs;
 
           shellHook = ''
             export PS1="\n[nix-shell:\w]$ "
