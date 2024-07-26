@@ -58,12 +58,35 @@
           libxkbcommon
           wayland
         ];
+        llvm-cov = pkgs.stdenv.mkDerivation {
+          name = "llvm-cov";
+          inherit src;
+
+          buildInputs = [
+            rust
+            pkgs.cargo-llvm-cov
+          ];
+
+          buildPhase = ''
+            cargo llvm-cov --html --offline
+            mkdir $out/share
+          '';
+
+          installPhase = ''
+            cp target/llvm-cov/html/* $out/share
+            chmod -R 666 $out/share/*
+          '';
+
+          meta.allowSubstitutes = true;
+          meta.allowUnfree = true;
+        };
       in
       {
         formatter = treefmtEval.config.build.wrapper;
 
         packages.default = kosu;
         packages.doc = cargo-doc;
+        packages.cov = llvm-cov;
 
         apps.default = flake-utils.lib.mkApp {
           drv = self.packages.${system}.default;
