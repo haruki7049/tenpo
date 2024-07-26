@@ -88,7 +88,7 @@
         };
 
         checks = {
-          inherit kosu cargo-clippy cargo-doc;
+          inherit kosu cargo-clippy cargo-doc llvm-cov llvm-cov-text;
           formatting = treefmtEval.config.build.check self;
         };
 
