@@ -58,27 +58,10 @@
           libxkbcommon
           wayland
         ];
-        llvm-cov = pkgs.stdenv.mkDerivation {
-          name = "llvm-cov";
-          inherit src;
-
-          buildInputs = [
-            rust
-            pkgs.cargo-llvm-cov
-          ];
-
-          buildPhase = ''
-            cargo llvm-cov --html --offline
-            mkdir $out/share
-          '';
-
-          installPhase = ''
-            cp target/llvm-cov/html/* $out/share
-            chmod -R 666 $out/share/*
-          '';
-
-          meta.allowSubstitutes = true;
-          meta.allowUnfree = true;
+        llvm-cov = craneLib.cargoLlvmCov {
+          inherit cargoArtifacts src;
+          buildInputs = bevyengine-dependencies;
+          nativeBuildInputs = [ pkgs.pkg-config ];
         };
       in
       {
