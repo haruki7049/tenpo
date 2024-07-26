@@ -58,6 +58,14 @@
           libxkbcommon
           wayland
         ];
+        llvm-cov-text = craneLib.cargoLlvmCov {
+          inherit cargoArtifacts src;
+          buildInputs = bevyengine-dependencies;
+          nativeBuildInputs = [ pkgs.pkg-config ];
+          cargoExtraArgs = "--locked";
+          cargoLlvmCovCommand = "test";
+          cargoLlvmCovExtraArgs = "";
+        };
         llvm-cov = craneLib.cargoLlvmCov {
           inherit cargoArtifacts src;
           buildInputs = bevyengine-dependencies;
@@ -73,6 +81,7 @@
         packages.default = kosu;
         packages.doc = cargo-doc;
         packages.llvm-cov = llvm-cov;
+        packages.llvm-cov-text = llvm-cov-text;
 
         apps.default = flake-utils.lib.mkApp {
           drv = self.packages.${system}.default;
