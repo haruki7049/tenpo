@@ -64,7 +64,7 @@
           nativeBuildInputs = [ pkgs.pkg-config ];
           cargoExtraArgs = "--locked";
           cargoLlvmCovCommand = "test";
-          cargoLlvmCovExtraArgs = "";
+          cargoLlvmCovExtraArgs = "--text --output-dir $out";
         };
         llvm-cov = craneLib.cargoLlvmCov {
           inherit cargoArtifacts src;
@@ -72,7 +72,7 @@
           nativeBuildInputs = [ pkgs.pkg-config ];
           cargoExtraArgs = "--locked";
           cargoLlvmCovCommand = "test";
-          cargoLlvmCovExtraArgs = "--html";
+          cargoLlvmCovExtraArgs = "--html --output-dir $out";
         };
       in
       {
