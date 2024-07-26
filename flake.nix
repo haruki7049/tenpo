@@ -8,7 +8,7 @@
   };
 
   outputs = { self, nixpkgs, treefmt-nix, rust-overlay, flake-utils, crane }:
-    flake-utils.lib.eachSystem [ "x86_64-linux" ] (system:
+    flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ] (system:
       let
         overlays = [ (import rust-overlay) ];
         pkgs = import nixpkgs {
