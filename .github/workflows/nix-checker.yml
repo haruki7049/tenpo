@@ -50,6 +50,11 @@ jobs:
           nix_path: nixpkgs=channel:nixos-unstable
       - name: Run nix-build with flakes
         run: nix build .#llvm-cov-text
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-text
+          path: result
 
   build-cargo-llvm-cov:
     runs-on: ubuntu-latest
@@ -65,5 +70,5 @@ jobs:
       - name: Upload coverage
         uses: actions/upload-artifact@v4
         with:
-          name: coverage
+          name: coverage-html
           path: result
