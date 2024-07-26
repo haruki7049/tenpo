@@ -48,6 +48,7 @@ jobs:
       - name: Run nix-build with flakes
         run: nix build .#llvm-cov
       - name: Upload coverage
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: coverage
+          path: result

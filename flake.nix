@@ -62,6 +62,9 @@
           inherit cargoArtifacts src;
           buildInputs = bevyengine-dependencies;
           nativeBuildInputs = [ pkgs.pkg-config ];
+          cargoExtraArgs = "--locked";
+          cargoLlvmCovCommand = "test";
+          cargoLlvmCovExtraArgs = "--html";
         };
       in
       {
