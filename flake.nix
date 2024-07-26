@@ -69,7 +69,7 @@
 
         packages.default = kosu;
         packages.doc = cargo-doc;
-        packages.cov = llvm-cov;
+        packages.llvm-cov = llvm-cov;
 
         apps.default = flake-utils.lib.mkApp {
           drv = self.packages.${system}.default;

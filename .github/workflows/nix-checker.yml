@@ -46,7 +46,7 @@ jobs:
         with:
           nix_path: nixpkgs=channel:nixos-unstable
       - name: Run nix-build with flakes
-        run: nix build .#cov
+        run: nix build .#llvm-cov
       - name: Upload coverage
         uses: actions/upload-artifact@v2
         with:
