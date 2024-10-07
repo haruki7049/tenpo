@@ -59,12 +59,16 @@
           };
           llvm-cov-text = craneLib.cargoLlvmCov {
             inherit cargoArtifacts src;
+            buildInputs = bevyengine-dependencies;
+            nativeBuildInputs = [ pkgs.pkg-config ];
             cargoExtraArgs = "--locked";
             cargoLlvmCovCommand = "test";
             cargoLlvmCovExtraArgs = "--text --output-dir $out";
           };
           llvm-cov = craneLib.cargoLlvmCov {
             inherit cargoArtifacts src;
+            buildInputs = bevyengine-dependencies;
+            nativeBuildInputs = [ pkgs.pkg-config ];
             cargoExtraArgs = "--locked";
             cargoLlvmCovCommand = "test";
             cargoLlvmCovExtraArgs = "--html --output-dir $out";
