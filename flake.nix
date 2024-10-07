@@ -1,111 +1,112 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
+    flake-parts.url = "github:hercules-ci/flake-parts";
     treefmt-nix.url = "github:numtide/treefmt-nix";
     rust-overlay.url = "github:oxalica/rust-overlay";
     crane.url = "github:ipetkov/crane";
   };
 
-  outputs = { self, nixpkgs, treefmt-nix, rust-overlay, flake-utils, crane }:
-    flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" ] (system:
-      let
-        overlays = [ (import rust-overlay) ];
-        pkgs = import nixpkgs {
-          inherit overlays system;
-        };
-        lib = pkgs.lib;
-        treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
-        rust = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
-        craneLib = (crane.mkLib pkgs).overrideToolchain rust;
-        src = ./.;
-        cargoArtifacts = craneLib.buildDepsOnly {
-          inherit src;
-          buildInputs = bevyengine-dependencies;
-          nativeBuildInputs = [ pkgs.pkg-config ];
-        };
-        kosu = craneLib.buildPackage {
-          inherit src cargoArtifacts;
-          buildInputs = bevyengine-dependencies;
-          nativeBuildInputs = [ pkgs.pkg-config ];
-          strictDeps = true;
+  outputs =
+    inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+      ];
 
-          doCheck = true;
-        };
-        cargo-clippy = craneLib.cargoClippy {
-          inherit cargoArtifacts src;
-          buildInputs = bevyengine-dependencies;
-          nativeBuildInputs = [ pkgs.pkg-config ];
-          cargoClippyExtraArgs = "--verbose -- --deny warnings";
-        };
-        cargo-doc = craneLib.cargoDoc {
-          inherit cargoArtifacts src;
-          buildInputs = bevyengine-dependencies;
-          nativeBuildInputs = [ pkgs.pkg-config ];
-        };
-        bevyengine-dependencies = with pkgs; [
-          udev
-          alsa-lib
-          vulkan-loader
+      imports = [
+        inputs.treefmt-nix.flakeModule
+      ];
 
-          # To use the x11 feature
-          xorg.libX11
-          xorg.libXcursor
-          xorg.libXi
-          xorg.libXrandr
+      perSystem = { pkgs, lib, system, ... }:
+        let
+          overlays = [ inputs.rust-overlay.overlays.default ];
+          rust = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
+          craneLib = (inputs.crane.mkLib pkgs).overrideToolchain rust;
+          src = lib.cleanSource ./.;
+          cargoArtifacts = craneLib.buildDepsOnly {
+            inherit src;
+            buildInputs = bevyengine-dependencies;
+            nativeBuildInputs = [ pkgs.pkg-config ];
+          };
+          kosu = craneLib.buildPackage {
+            inherit src cargoArtifacts;
+            strictDeps = true;
+            buildInputs = bevyengine-dependencies;
+            nativeBuildInputs = [ pkgs.pkg-config ];
 
-          # To use the wayland feature
-          libxkbcommon
-          wayland
-        ];
-        llvm-cov-text = craneLib.cargoLlvmCov {
-          inherit cargoArtifacts src;
-          buildInputs = bevyengine-dependencies;
-          nativeBuildInputs = [ pkgs.pkg-config ];
-          cargoExtraArgs = "--locked";
-          cargoLlvmCovCommand = "test";
-          cargoLlvmCovExtraArgs = "--text --output-dir $out";
-        };
-        llvm-cov = craneLib.cargoLlvmCov {
-          inherit cargoArtifacts src;
-          buildInputs = bevyengine-dependencies;
-          nativeBuildInputs = [ pkgs.pkg-config ];
-          cargoExtraArgs = "--locked";
-          cargoLlvmCovCommand = "test";
-          cargoLlvmCovExtraArgs = "--html --output-dir $out";
-        };
-      in
-      {
-        formatter = treefmtEval.config.build.wrapper;
+            doCheck = true;
+          };
+          cargo-clippy = craneLib.cargoClippy {
+            inherit src cargoArtifacts;
+            buildInputs = bevyengine-dependencies;
+            nativeBuildInputs = [ pkgs.pkg-config ];
 
-        packages.default = kosu;
-        packages.doc = cargo-doc;
-        packages.llvm-cov = llvm-cov;
-        packages.llvm-cov-text = llvm-cov-text;
+            cargoClippyExtraArgs = "--verbose -- --deny warning";
+          };
+          cargo-doc = craneLib.cargoDoc {
+            inherit src cargoArtifacts;
+            buildInputs = bevyengine-dependencies;
+            nativeBuildInputs = [ pkgs.pkg-config ];
+          };
+          llvm-cov-text = craneLib.cargoLlvmCov {
+            inherit cargoArtifacts src;
+            cargoExtraArgs = "--locked";
+            cargoLlvmCovCommand = "test";
+            cargoLlvmCovExtraArgs = "--text --output-dir $out";
+          };
+          llvm-cov = craneLib.cargoLlvmCov {
+            inherit cargoArtifacts src;
+            cargoExtraArgs = "--locked";
+            cargoLlvmCovCommand = "test";
+            cargoLlvmCovExtraArgs = "--html --output-dir $out";
+          };
 
-        apps.default = flake-utils.lib.mkApp {
-          drv = self.packages.${system}.default;
-        };
+          bevyengine-dependencies = with pkgs; [
+            udev
+            alsa-lib
+            vulkan-loader
 
-        checks = {
-          inherit kosu cargo-clippy cargo-doc llvm-cov llvm-cov-text;
-          formatting = treefmtEval.config.build.check self;
-        };
+            # To use the x11 feature
+            xorg.libX11
+            xorg.libXcursor
+            xorg.libXi
+            xorg.libXrandr
 
-        devShells.default = pkgs.mkShell rec {
-          buildInputs = bevyengine-dependencies ++ [
-            rust
+            # To use the wayland feature
+            libxkbcommon
+            wayland
           ];
+        in
+        {
+          _module.args.pkgs = import inputs.nixpkgs {
+            inherit system overlays;
+          };
 
-          nativeBuildInputs = [
-            pkgs.pkg-config
-          ];
+          treefmt = {
+            projectRootFile = "flake.nix";
+            programs.nixpkgs-fmt.enable = true;
+            programs.rustfmt.enable = true;
+            programs.taplo.enable = true;
+            programs.actionlint.enable = true;
+          };
 
-          LD_LIBRARY_PATH = lib.makeLibraryPath buildInputs;
+          devShells.default = pkgs.mkShell rec {
+            buildInputs = bevyengine-dependencies ++ [
+              rust
+            ];
 
-          shellHook = ''
-            export PS1="\n[nix-shell:\w]$ "
-          '';
+            nativeBuildInputs = [
+              pkgs.pkg-config
+            ];
+
+            LD_LIBRARY_PATH = lib.makeLibraryPath buildInputs;
+
+            shellHook = ''
+              export PS1="\n[nix-shell:\w]$ "
+            '';
+          };
         };
-      });
+    };
 }
