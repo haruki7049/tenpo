@@ -19,7 +19,13 @@
         inputs.treefmt-nix.flakeModule
       ];
 
-      perSystem = { pkgs, lib, system, ... }:
+      perSystem =
+        {
+          pkgs,
+          lib,
+          system,
+          ...
+        }:
         let
           overlays = [ inputs.rust-overlay.overlays.default ];
           rust = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
@@ -104,18 +110,26 @@
               ;
           };
 
-
           treefmt = {
             projectRootFile = "flake.nix";
-            programs.nixpkgs-fmt.enable = true;
+            programs.nixfmt.enable = true;
             programs.rustfmt.enable = true;
             programs.taplo.enable = true;
             programs.actionlint.enable = true;
+            programs.mdformat.enable = true;
+
+            settings.formatter = {
+              mdformat.excludes = [
+                "CODE_OF_CONDUCT.md"
+                "SUPPORT.md"
+              ];
+            };
           };
 
           devShells.default = pkgs.mkShell rec {
             buildInputs = bevyengine-dependencies ++ [
               rust
+              pkgs.nil
             ];
 
             nativeBuildInputs = [
