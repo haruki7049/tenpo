@@ -84,6 +84,27 @@
             inherit system overlays;
           };
 
+          packages = {
+            inherit
+              kosu
+              llvm-cov
+              llvm-cov-text
+              ;
+            default = kosu;
+            doc = cargo-doc;
+          };
+
+          checks = {
+            inherit
+              kosu
+              cargo-clippy
+              cargo-doc
+              llvm-cov
+              llvm-cov-text
+              ;
+          };
+
+
           treefmt = {
             projectRootFile = "flake.nix";
             programs.nixpkgs-fmt.enable = true;
