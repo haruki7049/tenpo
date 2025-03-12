@@ -1,7 +1,9 @@
 name: nix-checker
-on:
-  push:
+
+on: push
+
 permissions: {}
+
 jobs:
   run-nix-check:
     runs-on: ubuntu-latest
