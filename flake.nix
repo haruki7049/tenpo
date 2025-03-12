@@ -1,20 +1,27 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    flake-parts.url = "github:hercules-ci/flake-parts";
+    systems.url = "github:nix-systems/default";
     flake-compat.url = "github:edolstra/flake-compat";
-    treefmt-nix.url = "github:numtide/treefmt-nix";
-    rust-overlay.url = "github:oxalica/rust-overlay";
     crane.url = "github:ipetkov/crane";
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
+    };
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
     inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-      ];
+      systems = import inputs.systems;
 
       imports = [
         inputs.treefmt-nix.flakeModule
@@ -57,37 +64,21 @@
             buildInputs = bevyengine-dependencies;
             nativeBuildInputs = [ pkgs.pkg-config ];
           };
-          llvm-cov-text = craneLib.cargoLlvmCov {
-            inherit cargoArtifacts src;
-            buildInputs = bevyengine-dependencies;
-            nativeBuildInputs = [ pkgs.pkg-config ];
-            cargoExtraArgs = "--locked";
-            cargoLlvmCovCommand = "test";
-            cargoLlvmCovExtraArgs = "--text --output-dir $out";
-          };
-          llvm-cov = craneLib.cargoLlvmCov {
-            inherit cargoArtifacts src;
-            buildInputs = bevyengine-dependencies;
-            nativeBuildInputs = [ pkgs.pkg-config ];
-            cargoExtraArgs = "--locked";
-            cargoLlvmCovCommand = "test";
-            cargoLlvmCovExtraArgs = "--html --output-dir $out";
-          };
 
-          bevyengine-dependencies = with pkgs; [
-            udev
-            alsa-lib
-            vulkan-loader
+          bevyengine-dependencies = lib.optionals pkgs.stdenv.isLinux [
+            pkgs.udev
+            pkgs.alsa-lib
+            pkgs.vulkan-loader
 
             # To use the x11 feature
-            xorg.libX11
-            xorg.libXcursor
-            xorg.libXi
-            xorg.libXrandr
+            pkgs.xorg.libX11
+            pkgs.xorg.libXcursor
+            pkgs.xorg.libXi
+            pkgs.xorg.libXrandr
 
             # To use the wayland feature
-            libxkbcommon
-            wayland
+            pkgs.libxkbcommon
+            pkgs.wayland
           ];
         in
         {
@@ -98,8 +89,6 @@
           packages = {
             inherit
               kosu
-              llvm-cov
-              llvm-cov-text
               ;
             default = kosu;
             doc = cargo-doc;
@@ -110,8 +99,6 @@
               kosu
               cargo-clippy
               cargo-doc
-              llvm-cov
-              llvm-cov-text
               ;
           };
 
