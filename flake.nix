@@ -1,9 +1,9 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     systems.url = "github:nix-systems/default";
-    flake-compat.url = "github:edolstra/flake-compat";
     crane.url = "github:ipetkov/crane";
+    flake-compat.url = "github:edolstra/flake-compat";
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
@@ -35,99 +35,129 @@
           ...
         }:
         let
-          overlays = [ inputs.rust-overlay.overlays.default ];
           rust = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
           craneLib = (inputs.crane.mkLib pkgs).overrideToolchain rust;
+          overlays = [ inputs.rust-overlay.overlays.default ];
           src = lib.cleanSource ./.;
+          buildInputs =
+            lib.optionals pkgs.stdenv.isLinux [
+              pkgs.pkg-config
+              pkgs.udev
+              pkgs.alsa-lib
+              pkgs.vulkan-loader
+              pkgs.xorg.libX11
+              pkgs.xorg.libXcursor
+              pkgs.xorg.libXi
+              pkgs.xorg.libXrandr
+              pkgs.libxkbcommon
+              pkgs.wayland
+            ]
+            ++ [
+              pkgs.llvmPackages.libclang.lib
+            ];
+          nativeBuildInputs = [
+            # Build tools
+            pkgs.pkg-config
+            pkgs.makeWrapper
+
+            # Rust
+            rust
+
+            # Nix
+            pkgs.nil
+
+            # Linker
+            pkgs.llvmPackages.clang
+            pkgs.llvmPackages.lld
+          ];
           cargoArtifacts = craneLib.buildDepsOnly {
-            inherit src;
-            buildInputs = bevyengine-dependencies;
-            nativeBuildInputs = [ pkgs.pkg-config ];
+            inherit src buildInputs nativeBuildInputs;
+
+            LIBCLANG_PATH = lib.makeLibraryPath buildInputs;
+            LD_LIBRARY_PATH = lib.makeLibraryPath buildInputs;
           };
           kosu = craneLib.buildPackage {
-            inherit src cargoArtifacts;
+            inherit
+              src
+              cargoArtifacts
+              buildInputs
+              nativeBuildInputs
+              ;
             strictDeps = true;
-            buildInputs = bevyengine-dependencies;
-            nativeBuildInputs = [ pkgs.pkg-config ];
-
             doCheck = true;
+
+            LIBCLANG_PATH = lib.makeLibraryPath buildInputs;
+            LD_LIBRARY_PATH = lib.makeLibraryPath buildInputs;
+
+            installPhaseCommand = ''
+              echo "actually installing contents of $postBuildInstallFromCargoBuildLogOut to $out"
+              mkdir -p $out
+              find "$postBuildInstallFromCargoBuildLogOut" -mindepth 1 -maxdepth 1 | xargs -r mv -t $out
+
+              wrapProgram $out/bin/kosu \
+                --set LD_LIBRARY_PATH ${lib.makeLibraryPath buildInputs}
+            '';
           };
           cargo-clippy = craneLib.cargoClippy {
-            inherit src cargoArtifacts;
-            buildInputs = bevyengine-dependencies;
-            nativeBuildInputs = [ pkgs.pkg-config ];
-
+            inherit
+              src
+              cargoArtifacts
+              buildInputs
+              nativeBuildInputs
+              ;
             cargoClippyExtraArgs = "--verbose -- --deny warning";
           };
           cargo-doc = craneLib.cargoDoc {
-            inherit src cargoArtifacts;
-            buildInputs = bevyengine-dependencies;
-            nativeBuildInputs = [ pkgs.pkg-config ];
+            inherit
+              src
+              cargoArtifacts
+              buildInputs
+              nativeBuildInputs
+              ;
           };
-
-          bevyengine-dependencies = lib.optionals pkgs.stdenv.isLinux [
-            pkgs.udev
-            pkgs.alsa-lib
-            pkgs.vulkan-loader
-
-            # To use the x11 feature
-            pkgs.xorg.libX11
-            pkgs.xorg.libXcursor
-            pkgs.xorg.libXi
-            pkgs.xorg.libXrandr
-
-            # To use the wayland feature
-            pkgs.libxkbcommon
-            pkgs.wayland
-          ];
         in
         {
           _module.args.pkgs = import inputs.nixpkgs {
             inherit system overlays;
           };
 
+          treefmt = {
+            projectRootFile = "flake.nix";
+
+            # Nix
+            programs.nixfmt.enable = true;
+
+            # Rust
+            programs.rustfmt.enable = true;
+
+            # TOML
+            programs.taplo.enable = true;
+
+            # GitHub Actions
+            programs.actionlint.enable = true;
+
+            # Markdown
+            programs.mdformat.enable = true;
+
+            # ShellScript
+            programs.shellcheck.enable = true;
+            programs.shfmt.enable = true;
+          };
+
           packages = {
-            inherit
-              kosu
-              ;
+            inherit kosu;
             default = kosu;
             doc = cargo-doc;
           };
 
           checks = {
-            inherit
-              kosu
-              cargo-clippy
-              cargo-doc
-              ;
+            inherit cargo-clippy;
           };
 
-          treefmt = {
-            projectRootFile = "flake.nix";
-            programs.nixfmt.enable = true;
-            programs.rustfmt.enable = true;
-            programs.taplo.enable = true;
-            programs.actionlint.enable = true;
-            programs.mdformat.enable = true;
+          devShells.default = pkgs.mkShell {
+            inherit buildInputs nativeBuildInputs;
 
-            settings.formatter = {
-              mdformat.excludes = [
-                "CODE_OF_CONDUCT.md"
-                "SUPPORT.md"
-              ];
-            };
-          };
-
-          devShells.default = pkgs.mkShell rec {
-            buildInputs = bevyengine-dependencies ++ [
-              rust
-              pkgs.nil
-            ];
-
-            nativeBuildInputs = [
-              pkgs.pkg-config
-            ];
-
+            LIBCLANG_PATH = lib.makeLibraryPath buildInputs;
             LD_LIBRARY_PATH = lib.makeLibraryPath buildInputs;
 
             shellHook = ''
