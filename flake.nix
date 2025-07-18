@@ -97,6 +97,11 @@
               wrapProgram $out/bin/kosu \
                 --set LD_LIBRARY_PATH ${lib.makeLibraryPath buildInputs}
             '';
+
+            meta = {
+              licenses = [ lib.licenses.mit ];
+              mainProgram = "kosu";
+            };
           };
           cargo-clippy = craneLib.cargoClippy {
             inherit
@@ -105,7 +110,7 @@
               buildInputs
               nativeBuildInputs
               ;
-            cargoClippyExtraArgs = "--verbose -- --deny warning";
+            cargoClippyExtraArgs = "--verbose -- --deny warnings";
 
             LIBCLANG_PATH = lib.makeLibraryPath buildInputs;
             LD_LIBRARY_PATH = lib.makeLibraryPath buildInputs;
