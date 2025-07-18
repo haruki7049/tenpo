@@ -1,4 +1,4 @@
 [toolchain]
-channel = "1.85.0"
-components = ["rust-src", "rust-analyzer", "llvm-tools-preview"]
+channel = "1.88.0"
+components = ["rust-src", "rust-analyzer", "clippy"]
 profile = "default"
