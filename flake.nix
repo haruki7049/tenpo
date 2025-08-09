@@ -76,7 +76,7 @@
             LIBCLANG_PATH = lib.makeLibraryPath buildInputs;
             LD_LIBRARY_PATH = lib.makeLibraryPath buildInputs;
           };
-          kosu = craneLib.buildPackage {
+          tenpo = craneLib.buildPackage {
             inherit
               src
               cargoArtifacts
@@ -94,13 +94,13 @@
               mkdir -p $out
               find "$postBuildInstallFromCargoBuildLogOut" -mindepth 1 -maxdepth 1 | xargs -r mv -t $out
 
-              wrapProgram $out/bin/kosu \
+              wrapProgram $out/bin/tenpo \
                 --set LD_LIBRARY_PATH ${lib.makeLibraryPath buildInputs}
             '';
 
             meta = {
               licenses = [ lib.licenses.mit ];
-              mainProgram = "kosu";
+              mainProgram = "tenpo";
             };
           };
           cargo-clippy = craneLib.cargoClippy {
@@ -156,8 +156,8 @@
           };
 
           packages = {
-            inherit kosu;
-            default = kosu;
+            inherit tenpo;
+            default = tenpo;
             doc = cargo-doc;
           };
 
