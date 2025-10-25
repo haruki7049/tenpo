@@ -25,7 +25,7 @@ fn setup_audio(mut commands: Commands) {
 // タイマーを更新し、指定時間が経過したらサウンドを再生
 fn play_sound_on_timer(
     mut commands: Commands,
-    time: Res<Time>, // 経過時間を取得
+    time: Res<Time>,               // 経過時間を取得
     mut timer: ResMut<SoundTimer>, // タイマーリソース（可変）
     asset_server: Res<AssetServer>,
 ) {
