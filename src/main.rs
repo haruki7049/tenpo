@@ -66,7 +66,7 @@ fn play_metronome(
 fn check_key_press(
     mut commands: Commands,
     input: Res<ButtonInput<KeyCode>>,
-    time: Res<Time>, // Use Time instead of SoundTimer
+    time: Res<Time>,                // Use Time instead of SoundTimer
     metronome: Res<MetronomeState>, // Reference seconds_per_beat
     asset_server: Res<AssetServer>,
 ) {
