@@ -51,8 +51,9 @@ fn play_metronome(
     // (This catches up by playing missed beats if frames are dropped)
     while current_time >= next_beat_time {
         // Play the metronome sound
-        commands.spawn(AudioPlayer::new(
-            asset_server.load("sounds/maou_se_8bit02.ogg"),
+        commands.spawn((
+            AudioPlayer::new(asset_server.load("sounds/maou_se_8bit02.ogg")),
+            PlaybackSettings::DESPAWN,
         ));
 
         // Advance to the next beat
@@ -69,25 +70,30 @@ fn check_key_press(
     time: Res<Time>,                // Use Time instead of SoundTimer
     metronome: Res<MetronomeState>, // Reference seconds_per_beat
     asset_server: Res<AssetServer>,
+    audioplayer_query: Query<Entity, With<AudioPlayer>>,
 ) {
     if input.just_pressed(KeyCode::Space) {
         const ALLOWED_ERROR_MARGIN: f32 = 0.05;
+        const TIMING_OFFSET: f32 = 0.0;
         let spb = metronome.seconds_per_beat; // 1.0
 
         // "Absolute time" when the key was pressed
         let current_time = time.elapsed_secs();
 
+        let adjusted_press_time = current_time - TIMING_OFFSET;
+
         // Calculate the "nearest" beat time to the current time
         // (e.g., 2.98s -> 3.0s, 3.03s -> 3.0s, 3.4s -> 3.0s)
-        let nearest_beat_time = (current_time / spb).round() * spb;
+        let nearest_beat_time = (adjusted_press_time / spb).round() * spb;
 
         // Absolute difference
-        let delta = (current_time - nearest_beat_time).abs();
+        let delta = (adjusted_press_time - nearest_beat_time).abs();
 
         if delta <= ALLOWED_ERROR_MARGIN {
             // Success sound
-            commands.spawn(AudioPlayer::new(
-                asset_server.load("sounds/maou_se_8bit16.ogg"),
+            commands.spawn((
+                AudioPlayer::new(asset_server.load("sounds/maou_se_8bit16.ogg")),
+                PlaybackSettings::DESPAWN,
             ));
 
             info!(
@@ -97,6 +103,10 @@ fn check_key_press(
             info!(
                 "Mistake. time: {current_time:.3}, nearest_beat: {nearest_beat_time:.1}, delta: {delta:.3}"
             );
+        }
+
+        for audioplayer_entity in audioplayer_query.iter() {
+            info!("{audioplayer_entity}");
         }
     }
 }
