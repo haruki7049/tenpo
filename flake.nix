@@ -140,6 +140,7 @@
 
             # Rust
             programs.rustfmt.enable = true;
+            settings.formatter.rustfmt.command = "${rust}/bin/rustfmt";
 
             # TOML
             programs.taplo.enable = true;
