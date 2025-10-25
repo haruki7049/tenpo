@@ -14,7 +14,7 @@ fn main() {
         .run();
 }
 
-fn update_system(mut commands: Commands, keyboard: Res<ButtonInput<KeyCode>>) {
+fn update_system(keyboard: Res<ButtonInput<KeyCode>>) {
     for key in keyboard.get_just_pressed() {
         match key {
             KeyCode::KeyA
