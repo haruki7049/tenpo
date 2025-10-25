@@ -8,7 +8,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup_audio)
-        .add_systems(Update, play_sound_on_timer)
+        .add_systems(Update, (play_sound_on_timer, check_key_press))
         .run();
 }
 
@@ -38,5 +38,29 @@ fn play_sound_on_timer(
         commands.spawn(AudioPlayer::new(
             asset_server.load("sounds/maou_se_8bit02.ogg"),
         ));
+    }
+}
+
+fn check_key_press(
+    mut commands: Commands,
+    input: Res<ButtonInput<KeyCode>>,
+    timer: Res<SoundTimer>,
+    asset_server: Res<AssetServer>,
+) {
+    if input.just_pressed(KeyCode::Space) {
+        const ALLOWED_ERROR_MARGIN: f32 = 0.05;
+
+        let elapsed: f32 = timer.0.elapsed_secs();
+        let remaining: f32 = timer.0.remaining_secs();
+
+        if elapsed <= ALLOWED_ERROR_MARGIN || remaining <= ALLOWED_ERROR_MARGIN {
+            commands.spawn(AudioPlayer::new(
+                asset_server.load("sounds/maou_se_8bit16.ogg"),
+            ));
+
+            info!("OK!! elapsed: {elapsed}, remaining: {remaining}");
+        } else {
+            info!("Mistake. elapsed: {elapsed}, remaining: {remaining}");
+        }
     }
 }
