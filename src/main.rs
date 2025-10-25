@@ -106,7 +106,7 @@ fn check_key_press(
         }
 
         for audioplayer_entity in audioplayer_query.iter() {
-            info!("{audioplayer_entity}");
+            debug!("{audioplayer_entity}");
         }
     }
 }
