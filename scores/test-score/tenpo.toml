@@ -1,0 +1,40 @@
+# Header fields
+
+source = "source.wav"
+genre = "Test"
+title = "test-score"
+authors = ["haruki7049 <tontonkirikiri@gmail.com>"]
+
+# Score fields
+
+[[scores]]
+key = "Space"
+timing = 0.0
+
+[[scores]]
+key = "Space"
+timing = 1.0
+
+[[scores]]
+key = "Space"
+timing = 2.0
+
+[[scores]]
+key = "Space"
+timing = 3.0
+
+[[scores]]
+key = "Space"
+timing = 4.0
+
+[[scores]]
+key = "Space"
+timing = 5.0
+
+[[scores]]
+key = "Space"
+timing = 6.0
+
+[[scores]]
+key = "Space"
+timing = 7.0
