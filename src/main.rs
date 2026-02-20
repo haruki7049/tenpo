@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 use clap::Parser;
-use tenpo::cli::CLIArgs;
+use tenpo_cli::CLIArgs;
 
 fn main() {
     let _args: CLIArgs = CLIArgs::parse();

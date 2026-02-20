@@ -21,8 +21,14 @@ readme = "README.md"
 
 [workspace]
 resolver = "3"
-members = ["crates/score"]
+members = ["crates/cli", "crates/score"]
 
-[dependencies]
+[workspace.dependencies]
 bevy = "0.17.2"
 clap = { version = "4.5.45", features = ["derive", "string"] }
+tenpo_cli.path = "crates/cli"
+
+[dependencies]
+bevy.workspace = true
+clap.workspace = true
+tenpo_cli.workspace = true

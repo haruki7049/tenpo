@@ -4271,6 +4271,14 @@ version = "0.1.0"
 dependencies = [
  "bevy",
  "clap",
+ "tenpo_cli",
+]
+
+[[package]]
+name = "tenpo_cli"
+version = "0.1.0"
+dependencies = [
+ "clap",
 ]
 
 [[package]]
