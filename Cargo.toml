@@ -24,7 +24,7 @@ resolver = "3"
 members = ["crates/cli", "crates/score"]
 
 [workspace.dependencies]
-bevy = "0.17.2"
+bevy = "0.18.1"
 clap = { version = "4.5.45", features = ["derive", "string"] }
 tenpo_cli.path = "crates/cli"
 
