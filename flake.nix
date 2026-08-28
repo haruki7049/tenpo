@@ -62,6 +62,8 @@
             name = "tenpo";
             src = lib.cleanSource ./.;
             modules = ./gomod2nix.toml;
+
+            inherit buildInputs nativeBuildInputs env;
           };
         in
         {
