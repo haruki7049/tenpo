@@ -11,9 +11,7 @@
 *.so
 *.dylib
 *.wasm
-GOLD-BEAST
-gb-server
-!cmd/*
+target/
 
 # Test binary, built with `go test -c`
 *.test
