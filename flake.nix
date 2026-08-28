@@ -1,7 +1,6 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
-    crane.url = "github:ipetkov/crane";
     flake-compat.url = "github:edolstra/flake-compat";
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
@@ -9,10 +8,6 @@
     };
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    rust-overlay = {
-      url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -32,117 +27,39 @@
 
       perSystem =
         {
-          pkgs,
+          config,
           lib,
-          system,
+          pkgs,
           ...
         }:
         let
-          rust = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
-          craneLib = (inputs.crane.mkLib pkgs).overrideToolchain rust;
-          overlays = [ inputs.rust-overlay.overlays.default ];
-
-          src = lib.cleanSource ./.;
-          buildInputs =
-            lib.optionals pkgs.stdenv.isLinux [
-              pkgs.pkg-config
-              pkgs.udev
-              pkgs.alsa-lib
-              pkgs.vulkan-loader
-              pkgs.libX11
-              pkgs.libXcursor
-              pkgs.libXi
-              pkgs.libXrandr
-              pkgs.libxkbcommon
-              pkgs.wayland
-            ]
-            ++ [
-              pkgs.llvmPackages.libclang.lib
-            ];
-          nativeBuildInputs = [
-            pkgs.pkg-config # pkg-config
-            pkgs.makeWrapper # For the Nix packaging
-            pkgs.nil # Nix LSP
-            rust # Rust toolchain
+          env.LD_LIBRARY_PATH = lib.makeLibraryPath buildInputs;
+          buildInputs = lib.optionals pkgs.stdenv.isLinux [
+            pkgs.libx11
+            pkgs.libxrandr
+            pkgs.libGL
+            pkgs.libxcursor
+            pkgs.libxinerama
+            pkgs.libxi
+            pkgs.libxxf86vm
+            pkgs.libglvnd
           ];
-
-          cargoArtifacts = craneLib.buildDepsOnly {
-            inherit src buildInputs nativeBuildInputs;
-
-            LIBCLANG_PATH = lib.makeLibraryPath buildInputs;
-            LD_LIBRARY_PATH = lib.makeLibraryPath buildInputs;
-          };
-          tenpo = craneLib.buildPackage {
-            inherit
-              src
-              cargoArtifacts
-              buildInputs
-              nativeBuildInputs
-              ;
-            strictDeps = true;
-            doCheck = true;
-
-            LIBCLANG_PATH = lib.makeLibraryPath buildInputs;
-            LD_LIBRARY_PATH = lib.makeLibraryPath buildInputs;
-
-            installPhaseCommand = ''
-              echo "actually installing contents of $postBuildInstallFromCargoBuildLogOut to $out"
-              mkdir -p $out
-              find "$postBuildInstallFromCargoBuildLogOut" -mindepth 1 -maxdepth 1 | xargs -r mv -t $out
-
-              echo "Copy assets"
-              cp -r assets $out/bin
-
-              wrapProgram $out/bin/tenpo \
-                --set LD_LIBRARY_PATH ${lib.makeLibraryPath buildInputs}
-            '';
-
-            meta = {
-              licenses = [ lib.licenses.mit ];
-              mainProgram = "tenpo";
-            };
-          };
-          cargo-clippy = craneLib.cargoClippy {
-            inherit
-              src
-              cargoArtifacts
-              buildInputs
-              nativeBuildInputs
-              ;
-            cargoClippyExtraArgs = "--verbose -- --deny warnings";
-
-            LIBCLANG_PATH = lib.makeLibraryPath buildInputs;
-            LD_LIBRARY_PATH = lib.makeLibraryPath buildInputs;
-          };
-          cargo-doc = craneLib.cargoDoc {
-            inherit
-              src
-              cargoArtifacts
-              buildInputs
-              nativeBuildInputs
-              ;
-
-            LIBCLANG_PATH = lib.makeLibraryPath buildInputs;
-            LD_LIBRARY_PATH = lib.makeLibraryPath buildInputs;
-          };
+          nativeBuildInputs = [
+            pkgs.go # Golang
+            pkgs.nil # Nix LSP
+            pkgs.gopls # Golang LSP
+            pkgs.nushell # For scripts runner
+          ];
         in
         {
-          _module.args.pkgs = import inputs.nixpkgs {
-            inherit system overlays;
-          };
-
           treefmt = {
             projectRootFile = ".git/config";
 
             # Nix
             programs.nixfmt.enable = true;
 
-            # Rust
-            programs.rustfmt.enable = true;
-            settings.formatter.rustfmt.command = "${rust}/bin/rustfmt";
-
-            # TOML
-            programs.taplo.enable = true;
+            # Go
+            programs.gofmt.enable = true;
 
             # GitHub Actions
             programs.actionlint.enable = true;
@@ -155,25 +72,9 @@
             programs.shfmt.enable = true;
           };
 
-          packages = {
-            inherit tenpo;
-            default = tenpo;
-            doc = cargo-doc;
-          };
-
-          checks = {
-            inherit cargo-clippy;
-          };
-
           devShells.default = pkgs.mkShell {
-            inherit buildInputs nativeBuildInputs;
-
-            LIBCLANG_PATH = lib.makeLibraryPath buildInputs;
-            LD_LIBRARY_PATH = lib.makeLibraryPath buildInputs;
-
-            shellHook = ''
-              export PS1="\n[nix-shell:\w]$ "
-            '';
+            inherit buildInputs nativeBuildInputs env;
+            inputsFrom = [ config.treefmt.build.devShell ];
           };
         };
     };

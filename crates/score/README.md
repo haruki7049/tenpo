@@ -1,1 +1,0 @@
-# Score definition's crate
