@@ -1,4 +1,4 @@
-.PHONY: build clean run test
+.PHONY: build clean run test fmt
 
 build:
 	@./scripts/build.nu
@@ -11,3 +11,6 @@ run: build
 
 test:
 	@./scripts/test.nu
+
+fmt:
+	@./scripts/fmt.nu
