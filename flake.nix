@@ -41,14 +41,16 @@
           overlays = [ inputs.gomod2nix.overlays.default ];
           env.LD_LIBRARY_PATH = lib.makeLibraryPath buildInputs;
           buildInputs = lib.optionals pkgs.stdenv.hostPlatform.isLinux [
+            # Build time dependencies (they are needed to compile source code)
             pkgs.libx11
-            pkgs.libxrandr
-            pkgs.libGL
             pkgs.libxcursor
-            pkgs.libxinerama
             pkgs.libxi
+            pkgs.libxinerama
+            pkgs.libxrandr
             pkgs.libxxf86vm
-            pkgs.libglvnd
+
+            # Runtime dependencies (they are needed to construct LD_LIBRARY_PATH)
+            pkgs.libGL
           ];
           nativeBuildInputs = [
             pkgs.go # Golang
