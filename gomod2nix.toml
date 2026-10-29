@@ -2,29 +2,25 @@ schema = 3
 
 [mod]
   [mod.'github.com/ebitengine/gomobile']
-    version = 'v0.0.0-20250923094054-ea854a63cce1'
-    hash = 'sha256-T+RQTj5M2ICLW6t8X2gEQgBLMQChVUIFbpmQgd5HE/M='
+    version = 'v0.0.0-20260820040257-d11f821a26a6'
+    hash = 'sha256-DWNdgaWKOsCDWg1DBY+Z+AL6YumbCb2LKVZHNj92SX8='
 
   [mod.'github.com/ebitengine/hideconsole']
     version = 'v1.0.0'
     hash = 'sha256-YeOXzCqLsTJssPGMgp56Fe1YDRd7RIkyHywr7/5rBRs='
 
   [mod.'github.com/ebitengine/purego']
-    version = 'v0.9.0'
-    hash = 'sha256-jSlhGjhuYf15zHy7shSKR1rQN1sRyH5zXAzWqy+huHY='
+    version = 'v0.11.0'
+    hash = 'sha256-JjleZ8TbDFCUrV2whfa/utBtz/xnGiLx3LcC+VemN2U='
 
   [mod.'github.com/hajimehoshi/ebiten/v2']
-    version = 'v2.9.10'
-    hash = 'sha256-wFZPChruuKiBTI6souD6BGVyUpH59cmyxWkHwZijAUU='
-
-  [mod.'github.com/jezek/xgb']
-    version = 'v1.1.1'
-    hash = 'sha256-LjbHWx2dzeVUOf3+VYpMZk+mXkxjwRR+v0oH3ZfPEDY='
+    version = 'v2.10.5'
+    hash = 'sha256-gGCXFrI6jJ56JJ1adkjPjSdslZUsieXzjwMXmgQS5Bk='
 
   [mod.'golang.org/x/sync']
-    version = 'v0.21.0'
-    hash = 'sha256-2n7PVb1krz7UpnXYGVmCrxV0fZBnjQdVVt6eVudEPYY='
+    version = 'v0.22.0'
+    hash = 'sha256-VZjl0fAM0p/nI81zh+pdBjzxFupx0UcKYXBBpL2ZS7k='
 
   [mod.'golang.org/x/sys']
-    version = 'v0.44.0'
-    hash = 'sha256-JDlj+PKsG6I6kjv5JyOUNreY51u5An0oZ5OZMHZSk+A='
+    version = 'v0.47.0'
+    hash = 'sha256-TpbRyWWqHjddP6QzUgAbaLd2EE0S+GYNRUIDJd18r98='
