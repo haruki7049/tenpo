@@ -1,6 +1,6 @@
 module github.com/haruki7049/tenpo
 
-go 1.26.7
+go 1.27.3
 
 require github.com/hajimehoshi/ebiten/v2 v2.10.5
 
