@@ -5,6 +5,12 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
+const (
+	WINDOW_WIDTH  = 640
+	WINDOW_HEIGHT = 480
+	WINDOW_TITLE  = "tenpo"
+)
+
 type Game struct{}
 
 func (g *Game) Update() error {
