@@ -1,8 +1,11 @@
 package game
 
 import (
+	"errors"
+
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/haruki7049/tenpo/internal/game/scenes/example"
+	"github.com/haruki7049/tenpo/internal/scene"
 )
 
 const (
@@ -11,20 +14,44 @@ const (
 	WINDOW_TITLE  = "tenpo"
 )
 
-type Game struct{}
+// Game is the root ebiten.Game implementation. It only owns the currently
+// active Scene and delegates Update/Draw to it.
+type Game struct {
+	scene scene.Scene
+}
 
 func (g *Game) Update() error {
+	if g.scene == nil {
+		return errors.New("Failed to use g.scene because g.scene is null")
+	}
+
+	next, err := g.scene.Update()
+	if err != nil {
+		return err
+	}
+	if next != nil {
+		g.scene = next
+	}
+
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrint(screen, "Hello, tenpo game!!")
+	if g.scene == nil {
+		return
+	}
+
+	g.scene.Draw(screen)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
 	return outsideWidth, outsideHeight
 }
 
-func NewGame() *Game {
-	return &Game{}
+// Initialize a value typed Game struct
+func newGame() *Game {
+	g := &Game{}
+	g.scene = example.NewExampleScene()
+
+	return g
 }
