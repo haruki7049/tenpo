@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/haruki7049/tenpo/internal/game/scenes/example"
+	"github.com/haruki7049/tenpo/internal/game/scenes/playing"
 	"github.com/haruki7049/tenpo/internal/scene"
 )
 
@@ -51,7 +51,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 // Initialize a value typed Game struct
 func newGame() *Game {
 	g := &Game{}
-	g.scene = example.NewExampleScene()
+	g.scene = playing.NewPlayingScene()
 
 	return g
 }
