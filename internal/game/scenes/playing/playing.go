@@ -1,34 +1,102 @@
 package playing
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/haruki7049/tenpo/internal/pack"
 	"github.com/haruki7049/tenpo/internal/scene"
 )
 
+const (
+	TrailingTicks = 60 * 2
+)
+
 type PlayingScene struct {
-	count int
+	score int
+	tick  tickCounter
 }
 
 var _ scene.Scene = (*PlayingScene)(nil)
 
+// default score pack
+var defaultScore pack.ScorePack = pack.ScorePack{
+	Scores: []pack.Note{
+		pack.Note{Button: ebiten.MouseButtonLeft, Timing: 60},
+		pack.Note{Button: ebiten.MouseButtonLeft, Timing: 120},
+		pack.Note{Button: ebiten.MouseButtonLeft, Timing: 180},
+		pack.Note{Button: ebiten.MouseButtonLeft, Timing: 240},
+	},
+	Source: "",
+}
+
 func NewPlayingScene() *PlayingScene {
-	return &PlayingScene{}
+	g := &PlayingScene{}
+	g.tick = newTickCounter()
+
+	return g
 }
 
 func (es *PlayingScene) Draw(screen *ebiten.Image) {
-	message := fmt.Sprintf("es.count: %d", es.count)
+	message := fmt.Sprintf("es.score: %d, es.tick: %d", es.score, es.tick.Count())
 
 	ebitenutil.DebugPrint(screen, "In PlayingScene\n"+message)
 }
 
 func (es *PlayingScene) Update() (scene.Scene, error) {
-	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
-		es.count += 1
+	es.tick.Update()
+
+	const defaultMouseButton ebiten.MouseButton = ebiten.MouseButtonLeft
+	if inpututil.IsMouseButtonJustPressed(defaultMouseButton) && es.judge(defaultScore) {
+		es.score += 1
+	}
+
+	if defaultScore.MaxTick()+TrailingTicks < es.tick.Count() {
+		return nil, errors.New("Finished the defaultScore")
 	}
 
 	return nil, nil
+}
+
+func (es *PlayingScene) judge(p pack.ScorePack) bool {
+	const timingRange int = 4
+	var isJustTiming bool = false
+	tick := es.tick.Count()
+
+	for _, n := range p.Scores {
+		maxTiming := n.Timing + timingRange
+		minTiming := n.Timing - timingRange
+
+		if maxTiming >= tick && minTiming <= tick {
+			isJustTiming = true
+		}
+	}
+
+	return isJustTiming
+}
+
+type tickCounter struct {
+	count int
+}
+
+func newTickCounter() tickCounter {
+	tc := tickCounter{}
+	tc.count = 0
+
+	return tc
+}
+
+func (tc *tickCounter) Count() int {
+	return tc.count
+}
+
+func (tc *tickCounter) Update() {
+	tc.count += 1
+}
+
+func (tc *tickCounter) UpdateWith(c int) {
+	tc.count += c
 }
