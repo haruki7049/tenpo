@@ -2,18 +2,18 @@ package pack
 
 import "github.com/hajimehoshi/ebiten/v2"
 
-type ScorePack struct {
-	// Score data
-	Scores []Note
+type SheetPack struct {
+	// Sheet data
+	Sheets []Note
 
 	// File path
 	Source string
 }
 
-func (sp ScorePack) MaxTick() int {
+func (sp SheetPack) MaxTick() int {
 	var maxTick int
 
-	for _, n := range sp.Scores {
+	for _, n := range sp.Sheets {
 		maxTick = n.Timing
 	}
 

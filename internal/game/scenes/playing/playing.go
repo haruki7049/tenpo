@@ -24,8 +24,8 @@ type PlayingScene struct {
 var _ scene.Scene = (*PlayingScene)(nil)
 
 // default score pack
-var defaultScore pack.ScorePack = pack.ScorePack{
-	Scores: []pack.Note{
+var defaultSheet pack.SheetPack = pack.SheetPack{
+	Sheets: []pack.Note{
 		pack.Note{Button: ebiten.MouseButtonLeft, Timing: 60},
 		pack.Note{Button: ebiten.MouseButtonLeft, Timing: 120},
 		pack.Note{Button: ebiten.MouseButtonLeft, Timing: 180},
@@ -51,22 +51,22 @@ func (es *PlayingScene) Update() (scene.Scene, error) {
 	es.tick.Update()
 
 	const defaultMouseButton ebiten.MouseButton = ebiten.MouseButtonLeft
-	if inpututil.IsMouseButtonJustPressed(defaultMouseButton) && es.judge(defaultScore) {
+	if inpututil.IsMouseButtonJustPressed(defaultMouseButton) && es.judge(defaultSheet) {
 		es.score += 1
 	}
 
-	if defaultScore.MaxTick()+TrailingTicks < es.tick.Count() {
+	if defaultSheet.MaxTick()+TrailingTicks < es.tick.Count() {
 		return nil, errors.New("Finished the defaultScore")
 	}
 
 	return nil, nil
 }
 
-func (es *PlayingScene) judge(p pack.ScorePack) bool {
+func (es *PlayingScene) judge(p pack.SheetPack) bool {
 	var isJustTiming bool = false
 	tick := es.tick.Count()
 
-	for _, n := range p.Scores {
+	for _, n := range p.Sheets {
 		maxTiming := n.Timing + TimingRange
 		minTiming := n.Timing - TimingRange
 
