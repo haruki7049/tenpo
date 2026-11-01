@@ -38,6 +38,7 @@
           ...
         }:
         let
+          GO_COMPILER = pkgs.go_1_27;
           overlays = [ inputs.gomod2nix.overlays.default ];
           env.LD_LIBRARY_PATH = lib.makeLibraryPath buildInputs;
           buildInputs = lib.optionals pkgs.stdenv.hostPlatform.isLinux [
@@ -53,7 +54,7 @@
             pkgs.libGL
           ];
           nativeBuildInputs = [
-            pkgs.go_1_27 # Golang
+            GO_COMPILER # Golang
             pkgs.nil # Nix LSP
             pkgs.gopls # Golang LSP
             pkgs.nushell # For scripts runner
@@ -64,6 +65,7 @@
             name = "tenpo";
             src = lib.cleanSource ./.;
             modules = ./gomod2nix.toml;
+            go = GO_COMPILER;
 
             inherit buildInputs nativeBuildInputs env;
           };
