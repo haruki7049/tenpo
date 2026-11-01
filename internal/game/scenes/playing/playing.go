@@ -12,7 +12,8 @@ import (
 )
 
 const (
-	TrailingTicks = 60 * 2
+	TrailingTicks     = 60 * 2
+	TimingRange   int = 8
 )
 
 type PlayingScene struct {
@@ -62,7 +63,6 @@ func (es *PlayingScene) Update() (scene.Scene, error) {
 }
 
 func (es *PlayingScene) judge(p pack.ScorePack) bool {
-	const timingRange int = 4
 	var isJustTiming bool = false
 	tick := es.tick.Count()
 
