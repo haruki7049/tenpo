@@ -49,11 +49,7 @@ func (es *PlayingScene) Draw(screen *ebiten.Image) {
 
 func (es *PlayingScene) Update() (scene.Scene, error) {
 	es.tick.Update()
-
-	const defaultMouseButton ebiten.MouseButton = ebiten.MouseButtonLeft
-	if inpututil.IsMouseButtonJustPressed(defaultMouseButton) && es.judge(defaultSheet) {
-		es.score += 1
-	}
+	es.judge(defaultSheet)
 
 	if defaultSheet.MaxTick()+TrailingTicks < es.tick.Count() {
 		return nil, errors.New("Finished the defaultScore")
@@ -62,20 +58,23 @@ func (es *PlayingScene) Update() (scene.Scene, error) {
 	return nil, nil
 }
 
-func (es *PlayingScene) judge(p pack.SheetPack) bool {
+func (es *PlayingScene) judge(p pack.SheetPack) {
 	var isJustTiming bool = false
 	tick := es.tick.Count()
 
 	for _, n := range p.Sheets {
+		mouseButton := n.Button
 		maxTiming := n.Timing + TimingRange
 		minTiming := n.Timing - TimingRange
 
-		if maxTiming >= tick && minTiming <= tick {
+		if maxTiming >= tick && minTiming <= tick && inpututil.IsMouseButtonJustPressed(mouseButton) {
 			isJustTiming = true
 		}
 	}
 
-	return isJustTiming
+	if isJustTiming {
+		es.score += 1
+	}
 }
 
 type tickCounter struct {
