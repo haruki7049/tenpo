@@ -18,7 +18,7 @@ const (
 
 type PlayingScene struct {
 	score int
-	tick  tickCounter
+	tick  *tickCounter
 }
 
 var _ scene.Scene = (*PlayingScene)(nil)
@@ -82,8 +82,8 @@ type tickCounter struct {
 	count int
 }
 
-func newTickCounter() tickCounter {
-	tc := tickCounter{}
+func newTickCounter() *tickCounter {
+	tc := &tickCounter{}
 	tc.count = 0
 
 	return tc
