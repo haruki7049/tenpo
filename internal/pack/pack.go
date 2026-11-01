@@ -1,13 +1,22 @@
 package pack
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"io/fs"
+
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/haruki7049/tenpo/assets"
+)
 
 type SheetPack struct {
+	// File path
+	AudioSource string
+
 	// Sheet data
 	Sheets []Note
+}
 
-	// File path
-	Source string
+func (sp SheetPack) OpenAudioSource() (fs.File, error) {
+	return assets.Assets.Open(sp.AudioSource)
 }
 
 func (sp SheetPack) MaxTick() int {
