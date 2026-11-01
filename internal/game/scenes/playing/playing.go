@@ -67,8 +67,8 @@ func (es *PlayingScene) judge(p pack.ScorePack) bool {
 	tick := es.tick.Count()
 
 	for _, n := range p.Scores {
-		maxTiming := n.Timing + timingRange
-		minTiming := n.Timing - timingRange
+		maxTiming := n.Timing + TimingRange
+		minTiming := n.Timing - TimingRange
 
 		if maxTiming >= tick && minTiming <= tick {
 			isJustTiming = true
