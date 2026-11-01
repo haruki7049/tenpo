@@ -7,6 +7,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/haruki7049/tenpo/internal/game/configs"
 	"github.com/haruki7049/tenpo/internal/pack"
 	"github.com/haruki7049/tenpo/internal/scene"
 )
@@ -26,10 +27,11 @@ var _ scene.Scene = (*PlayingScene)(nil)
 // default score pack
 var defaultSheet pack.SheetPack = pack.SheetPack{
 	Sheets: []pack.Note{
-		pack.Note{Button: ebiten.MouseButtonLeft, Timing: 60},
-		pack.Note{Button: ebiten.MouseButtonLeft, Timing: 120},
-		pack.Note{Button: ebiten.MouseButtonLeft, Timing: 180},
-		pack.Note{Button: ebiten.MouseButtonLeft, Timing: 240},
+		pack.Note{Button: ebiten.MouseButtonLeft, Timing: configs.TPS * 0},
+		pack.Note{Button: ebiten.MouseButtonLeft, Timing: configs.TPS * 1},
+		pack.Note{Button: ebiten.MouseButtonLeft, Timing: configs.TPS * 2},
+		pack.Note{Button: ebiten.MouseButtonLeft, Timing: configs.TPS * 3},
+		pack.Note{Button: ebiten.MouseButtonLeft, Timing: configs.TPS * 4},
 	},
 	Source: "",
 }
