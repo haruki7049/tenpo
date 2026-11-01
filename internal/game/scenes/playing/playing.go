@@ -59,21 +59,18 @@ func (es *PlayingScene) Update() (scene.Scene, error) {
 }
 
 func (es *PlayingScene) judge(p pack.SheetPack) {
-	var isJustTiming bool = false
 	tick := es.tick.Count()
 
-	for _, n := range p.Sheets {
+	for i, n := range p.Sheets {
 		mouseButton := n.Button
 		maxTiming := n.Timing + TimingRange
 		minTiming := n.Timing - TimingRange
 
 		if maxTiming >= tick && minTiming <= tick && inpututil.IsMouseButtonJustPressed(mouseButton) {
-			isJustTiming = true
+			es.score += 1
+			p.Sheets[i].MarkAsJudged()
+			break
 		}
-	}
-
-	if isJustTiming {
-		es.score += 1
 	}
 }
 

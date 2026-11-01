@@ -26,4 +26,11 @@ type Note struct {
 
 	// A ticks to determine timing
 	Timing int
+
+	// Whether it is already judged or not
+	IsAlreadyJudged bool
+}
+
+func (n *Note) MarkAsJudged() {
+	n.IsAlreadyJudged = true
 }
