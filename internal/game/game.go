@@ -43,9 +43,13 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 }
 
 // Initialize a value typed Game struct
-func newGame() *Game {
+func newGame() (*Game, error) {
 	g := &Game{}
-	g.scene = playing.NewPlayingScene()
+	scene, err := playing.NewPlayingScene()
+	if err != nil {
+		return nil, err
+	}
 
-	return g
+	g.scene = scene
+	return g, err
 }

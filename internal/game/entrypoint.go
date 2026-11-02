@@ -12,7 +12,13 @@ func Run() {
 	ebiten.SetWindowTitle(configs.WINDOW_TITLE)
 	ebiten.SetTPS(configs.TPS)
 
-	game := newGame()
+	var game *Game
+	var err error
+	game, err = newGame()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
 	}
