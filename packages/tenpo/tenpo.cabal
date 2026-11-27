@@ -1,0 +1,18 @@
+cabal-version: 3.0
+name:          tenpo
+version:       0.1.0.0
+license:       MIT
+author:        haruki7049
+maintainer:    haruki7049@mail.haruki7049.dev
+category:      Game
+build-type:    Simple
+
+common warnings
+  ghc-options: -Wall
+
+executable tenpo
+  import:           warnings
+  main-is:          Main.hs
+  build-depends:    base ^>=4.22.0.0
+  hs-source-dirs:   app
+  default-language: GHC2024

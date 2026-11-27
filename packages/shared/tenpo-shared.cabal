@@ -1,0 +1,28 @@
+cabal-version: 3.0
+name:          tenpo-shared
+version:       0.1.0.0
+license:       MIT
+author:        haruki7049
+maintainer:    haruki7049@mail.haruki7049.dev
+category:      Game
+build-type:    Simple
+
+common warnings
+  ghc-options: -Wall
+
+library
+  import:           warnings
+  exposed-modules:  MyLib
+  build-depends:    base ^>=4.22.0.0
+  hs-source-dirs:   src
+  default-language: GHC2024
+
+test-suite tenpo-shared-test
+  import:           warnings
+  default-language: GHC2024
+  type:             exitcode-stdio-1.0
+  hs-source-dirs:   test
+  main-is:          Main.hs
+  build-depends:
+    , base          ^>=4.22.0.0
+    , tenpo-shared

@@ -45,6 +45,10 @@
             # Nix
             programs.nixfmt.enable = true;
 
+            # Haskell
+            programs.ormolu.enable = true;
+            programs.cabal-fmt.enable = true;
+
             # GitHub Actions
             programs.actionlint.enable = true;
 
