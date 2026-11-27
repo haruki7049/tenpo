@@ -1,1 +1,0 @@
-# The tenpo project concepts
