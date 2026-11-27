@@ -32,6 +32,9 @@
         }:
         let
           nativeBuildInputs = [
+            pkgs.haskell.compiler.ghc914 # Haskell compiler
+            pkgs.cabal-install # Haskell cabal package manager
+            pkgs.haskell-language-server # Haskell language server
             pkgs.nil # Nix LSP
           ];
         in
