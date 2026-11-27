@@ -37,6 +37,10 @@
             pkgs.haskell-language-server # Haskell language server
             pkgs.nil # Nix LSP
           ];
+
+          buildInputs = [
+            pkgs.zlib
+          ];
         in
         {
           treefmt = {
@@ -63,7 +67,7 @@
           };
 
           devShells.default = pkgs.mkShell {
-            inherit nativeBuildInputs;
+            inherit buildInputs nativeBuildInputs;
             inputsFrom = [ config.treefmt.build.devShell ];
           };
         };

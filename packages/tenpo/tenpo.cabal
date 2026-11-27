@@ -13,6 +13,11 @@ common warnings
 executable tenpo
   import:           warnings
   main-is:          Main.hs
-  build-depends:    base ^>=4.22.0.0
+  build-depends:
+    , aztecs
+    , aztecs-gl
+    , aztecs-glfw
+    , base    ^>=4.22.0.0
+
   hs-source-dirs:   app
   default-language: GHC2024

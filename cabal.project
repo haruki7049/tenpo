@@ -1,5 +1,27 @@
 packages: packages/*/*.cabal
 
+
+-- aztecs clone by @haruki7049
+source-repository-package
+    type: git
+    location: https://github.com/haruki7049/aztecs.git
+    branch: main
+    tag: 2c1e6eeb29ed77e8c0f5cf080cc7a90ffb6a9993
+
+-- aztecs-gl clone by @haruki7049
+source-repository-package
+    type: git
+    location: https://github.com/haruki7049/aztecs-gl.git
+    branch: main
+    tag: d836254a2ae5fec44a16073973bb74eb91669cc4
+
+-- aztecs-glfw clone by @haruki7049
+source-repository-package
+    type: git
+    location: https://github.com/haruki7049/aztecs-glfw.git
+    branch: main
+    tag: 2c33c7d50788b7f53e35a7f9ef430618b65fc813
+
 active-repositories: hackage.haskell.org:merge
 index-state:
  , hackage.haskell.org 2026-11-27T00:00:00Z
