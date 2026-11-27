@@ -26,8 +26,9 @@
 
       perSystem =
         {
-          pkgs,
           config,
+          lib,
+          pkgs,
           ...
         }:
         let
@@ -40,6 +41,16 @@
 
           buildInputs = [
             pkgs.zlib
+          ]
+          ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [
+            pkgs.libGL
+            pkgs.libGLU
+            pkgs.libx11
+            pkgs.libxi
+            pkgs.libxrandr
+            pkgs.libxxf86vm
+            pkgs.libxcursor
+            pkgs.libxinerama
           ];
         in
         {
