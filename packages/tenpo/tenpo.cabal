@@ -17,7 +17,7 @@ executable tenpo
     , aztecs
     , aztecs-gl
     , aztecs-glfw
-    , base    ^>=4.22.0.0
+    , base         ^>=4.22.0.0
 
   hs-source-dirs:   app
   default-language: GHC2024
