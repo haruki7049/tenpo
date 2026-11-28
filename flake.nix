@@ -32,8 +32,17 @@
           ...
         }:
         let
+          # The replacement of pkgs.haskellPackages
+          hp = pkgs.haskell.packages.ghc9103.extend (
+            pkgs.haskell.lib.compose.packageSourceOverrides {
+              tenpo = ./packages/tenpo;
+              tenpo-shared = ./packages/tenpo-shared;
+            }
+          );
+
+          GHC = hp.ghc;
           nativeBuildInputs = [
-            pkgs.haskell.compiler.ghc914 # Haskell compiler
+            GHC # Haskell compiler
             pkgs.cabal-install # Haskell cabal package manager
             pkgs.haskell-language-server # Haskell language server
             pkgs.nil # Nix LSP
@@ -75,6 +84,11 @@
             # ShellScript
             programs.shellcheck.enable = true;
             programs.shfmt.enable = true;
+          };
+
+          packages = {
+            default = hp.tenpo;
+            inherit (hp) tenpo;
           };
 
           devShells.default = pkgs.mkShell {

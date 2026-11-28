@@ -13,7 +13,7 @@ common warnings
 library
   import:           warnings
   exposed-modules:  MyLib
-  build-depends:    base ^>=4.22.0.0
+  build-depends:    base ^>=4.20.2.0
   hs-source-dirs:   src
   default-language: GHC2024
 
@@ -24,5 +24,5 @@ test-suite tenpo-shared-test
   hs-source-dirs:   test
   main-is:          Main.hs
   build-depends:
-    , base          ^>=4.22.0.0
+    , base          ^>=4.20.2.0
     , tenpo-shared
