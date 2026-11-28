@@ -1,3 +1,0 @@
-[alias]
-xtask = "run --package tenpo_xtask --" # cargo-xtask
-x = "run --package tenpo_xtask --"     # cargo-xtask
