@@ -12,10 +12,14 @@ common warnings
 
 library
   import:           warnings
-  exposed-modules:  MyLib
-  build-depends:    base ^>=4.20.2.0
   hs-source-dirs:   src
   default-language: GHC2024
+
+  exposed-modules:
+    , Game.Tenpo
+
+  build-depends:
+    , base      ^>=4.20.2.0
 
 test-suite tenpo-shared-test
   import:           warnings
@@ -23,6 +27,12 @@ test-suite tenpo-shared-test
   type:             exitcode-stdio-1.0
   hs-source-dirs:   test
   main-is:          Main.hs
+
+  other-modules:
+    , Game.TenpoSpec
+
+  build-tool-depends: hspec-discover:hspec-discover
   build-depends:
     , base          ^>=4.20.2.0
+    , hspec
     , tenpo-shared

@@ -45,6 +45,7 @@
             GHC # Haskell compiler
             pkgs.cabal-install # Haskell cabal package manager
             pkgs.haskell-language-server # Haskell language server
+            hp.hspec-discover # Hspec test discover & runner tool
             pkgs.nil # Nix LSP
           ];
 
