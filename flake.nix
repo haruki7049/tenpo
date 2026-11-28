@@ -86,6 +86,10 @@
             programs.shfmt.enable = true;
           };
 
+          checks = {
+            inherit (hp) tenpo tenpo-shared;
+          };
+
           packages = {
             default = hp.tenpo;
             inherit (hp) tenpo;
