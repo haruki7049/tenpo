@@ -27,13 +27,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: cachix/install-nix-action@v31
       - name: Check flake
-        run: nix flake check
-      - name: Check formatting
-        run: nix fmt -- --ci
-      - name: Build
-        run: nix develop --command cabal build all
-      - name: Test
-        run: nix develop --command cabal test all
+        run: nix flake check --print-build-logs
 
   cabal:
     name: Cabal (${{ matrix.os }})
@@ -57,18 +51,18 @@ jobs:
       - uses: haskell-actions/setup@v2
         id: setup
         with:
-          ghc-version: "9.14"
+          ghc-version: "9.10.3"
           cabal-version: latest
-      - name: Configure
+      - name: Update cabal index-state
+        run: cabal update
+      - name: Configure cabal
         run: cabal configure --enable-tests --enable-documentation
-      - name: Freeze dependencies
-        run: cabal freeze
       - uses: actions/cache@v4
         with:
           path: |
             ${{ steps.setup.outputs.cabal-store }}
             dist-newstyle
-          key: ${{ runner.os }}-ghc-${{ steps.setup.outputs.ghc-version }}-${{ hashFiles('cabal.project.freeze') }}
+          key: ${{ runner.os }}-ghc-${{ steps.setup.outputs.ghc-version }}-${{ hashFiles('cabal.project', '**/*.cabal') }}
           restore-keys: |
             ${{ runner.os }}-ghc-${{ steps.setup.outputs.ghc-version }}-
       - name: Build
